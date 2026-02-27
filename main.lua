@@ -21,7 +21,11 @@ function love.update()
      current_sence.update()
   end
 end
-
+function love.keypressed(key, scancode, isrepeat)
+  if current_sence and current_sence.keypressed then
+    current_sence.keypressed(key, scancode, isrepeat)
+  end
+end
 
 -- skibidi
 
