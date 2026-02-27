@@ -1,7 +1,7 @@
 local gameplay = {}
 
 
-local note_icon = love.graphics.newImage("../assets/note.png")
+local note_icon = love.graphics.newImage("assets/note.png")
 local scroll_speed = 16.0
 
 -- Playback things
@@ -28,16 +28,26 @@ gameplay.init  = function()
 end
 
 gameplay.start = function()
-  audioInstance:play()
+  -- audioInstance:play()
+   
+  playback.time = playback.time + 1 / 60
 end
 
 gameplay.update = function()
- love.graphics.translate(time * scroll_speed, 0)
+ love.graphics.translate(playback.time * scroll_speed, 0)
 
 end
 
 gameplay.draw = function()
-  love.graphics.draw( note_icon, 100, 50)
-  
+      love.graphics.setColor(1, 1, 1)
+
+   love.graphics.draw( note_icon, love.graphics.getWidth() - (playback.time * scroll_speed), 0, 0, 0.05,0.05)
+   print(playback.time)
+print( love.graphics.getWidth() - (playback.time * scroll_speed))
+     love.graphics.setColor(1, 1, 1,0.5)
+  love.graphics.setLineWidth(2)
+  love.graphics.line(100,love.graphics.getHeight(),100, 0);
+ 
 end
 return gameplay;
+  

@@ -1,8 +1,8 @@
 
 -- 場景
 local sences = {
-   gameplay =  require("gameplay.lua"),
-   menu = require("menu.lua")
+   gameplay =  require("scenes.gameplay"),
+   menu = require("scenes.menu")
 }
 
 local current_sence = nil
