@@ -2,24 +2,28 @@ local menu = {}
 local timer = 0
 
 function menu.update(dt)
-    timer=timer+dt
-end
+ end
+local inter_48pt_bold = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 48)
+local inter_24pt_bold = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 24)
+local background = love.graphics.newImage("assets/cool_blur.png")
 
 function menu.draw()
-    love.graphics.clear(0,0,0)
-    love.graphics.printf("Welcome", 0, love.graphics.getHeight()/2, love.graphics.getWidth(), "center")
-    love.graphics.printf("Press Enter to start", 0, love.graphics.getHeight()/2 + 30, love.graphics.getWidth(), "center")
-    love.setcolor(0.1,0.1,0.3)
-    love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),love.graphics.getHeight())
-    love.graphics.setColor(0.3,0.5,0.8,0.5)
-    love.graphics.circle("fill", 200 ,150 ,80)
-    love.graphics.circle("fill", 500 ,300 ,180)
-    love.graphics.setColor(1, 1, 1)
+      love.graphics.setColor(1, 1, 1, 1)
+      love.graphics.setBackgroundColor(214 / 255, 138/ 255, 133 /255)
+   -- love.graphics.draw(background, love.graphics.getWidth() /2 , love.graphics.getHeight() /2)
+     love.graphics.printf("untitled rhythm game",inter_48pt_bold,  0, 200, love.graphics.getWidth(), "center")
+ 
+
+    love.graphics.printf("press enter to start",inter_24pt_bold, 0, love.graphics.getHeight() - 140, love.graphics.getWidth(), "center")
+
+         love.graphics.printf("FC,AP Video from MajdataPlay",love.fonts.inter.bold["12"], 0, love.graphics.getHeight() - 20, love.graphics.getWidth(), "center")
+
 end
 
 function menu.keypressed(key)
     if key == "return" then
-        scene = require("gameplay")
+        print("Switch page")
+        love.scene = love.scenes.song_select
     end
 end
 
