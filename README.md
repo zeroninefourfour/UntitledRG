@@ -9,3 +9,7 @@ Made with love and Love2D
 - 0955
 ### Art
 - 石灰水
+
+## Gameplay
+Using W,S Key to move
+and Use J,K Key to hit the note
