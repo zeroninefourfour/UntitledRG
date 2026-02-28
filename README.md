@@ -1,6 +1,6 @@
 # URG
 A rhythm game created in 48 hours (Campfire Taiwan).
-
+Made with love and Love2D
 
 ## Contributors
 
