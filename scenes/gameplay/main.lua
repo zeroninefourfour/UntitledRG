@@ -4,16 +4,16 @@ local bgr = require("scenes.backgroundRender")
 local gameplay = {}
 gameplay.notes = {}
 gameplay.judgement = {}
+gameplay.input = {}
 local gready = false
 
+
+-- Assets
 local note_icon = love.graphics.newImage("assets/note.png")
-local inter_24pt_bold = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 12)
-
-local inter18px_bold = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 18)
+-- NoteCounts
 local j = love.graphics.newImage("assets/icons/j.png")
-
 local k = love.graphics.newImage("assets/icons/k.png")
--- Audio
+
 local audioInstance = love.audio.newSource("music/Kyu-krarin/audio.mp3", "stream")
 local hitsound = love.audio.newSource("music/hitsound.wav", "static")
 
@@ -35,61 +35,10 @@ local playback = {
 local keys_held = {}
 local character = {
     y = 0,
-    image = love.graphics.newImage("assets/teto.jpg"),
-    forms = {
-        yellow = {love.graphics.newImage("assets/characters/red/1.png"),
-                  love.graphics.newImage("assets/characters/red/2.png"),
-                  love.graphics.newImage("assets/characters/red/3.png"),
-                  love.graphics.newImage("assets/characters/red/4.png"),
-                  love.graphics.newImage("assets/characters/red/5.png"),
-                  love.graphics.newImage("assets/characters/red/6.png"),
-                  love.graphics.newImage("assets/characters/red/7.png"),
-                  love.graphics.newImage("assets/characters/red/8.png"),
-                  love.graphics.newImage("assets/characters/red/9.png"),
-                  love.graphics.newImage("assets/characters/red/10.png"),
-                  love.graphics.newImage("assets/characters/red/11.png"),
-                  love.graphics.newImage("assets/characters/red/12.png"),
-                  love.graphics.newImage("assets/characters/red/13.png"),
-                  love.graphics.newImage("assets/characters/red/14.png"),
-                  love.graphics.newImage("assets/characters/red/15.png"),
-                  love.graphics.newImage("assets/characters/red/16.png")},
-        green = {love.graphics.newImage("assets/characters/green/1.png"),
-                 love.graphics.newImage("assets/characters/green/2.png"),
-                 love.graphics.newImage("assets/characters/green/3.png"),
-                 love.graphics.newImage("assets/characters/green/4.png"),
-                 love.graphics.newImage("assets/characters/green/5.png"),
-                 love.graphics.newImage("assets/characters/green/6.png"),
-                 love.graphics.newImage("assets/characters/green/7.png"),
-
-                 love.graphics.newImage("assets/characters/green/8.png"),
-                 love.graphics.newImage("assets/characters/green/9.png"),
-                 love.graphics.newImage("assets/characters/green/10.png"),
-                 love.graphics.newImage("assets/characters/green/11.png"),
-                 love.graphics.newImage("assets/characters/green/12.png"),
-                 love.graphics.newImage("assets/characters/green/13.png"),
-                 love.graphics.newImage("assets/characters/green/14.png"),
-                 love.graphics.newImage("assets/characters/green/15.png"),
-
-                 love.graphics.newImage("assets/characters/green/16.png")},
-        blue = {love.graphics.newImage("assets/characters/blue/1.png"),
-                love.graphics.newImage("assets/characters/blue/2.png"),
-                love.graphics.newImage("assets/characters/blue/3.png"),
-                love.graphics.newImage("assets/characters/blue/4.png"),
-                love.graphics.newImage("assets/characters/blue/5.png"),
-                love.graphics.newImage("assets/characters/blue/6.png"),
-                love.graphics.newImage("assets/characters/blue/7.png"),
-
-                love.graphics.newImage("assets/characters/blue/8.png"),
-                love.graphics.newImage("assets/characters/blue/9.png"),
-                love.graphics.newImage("assets/characters/blue/10.png"),
-                love.graphics.newImage("assets/characters/blue/11.png"),
-                love.graphics.newImage("assets/characters/blue/12.png"),
-                love.graphics.newImage("assets/characters/blue/13.png"),
-                love.graphics.newImage("assets/characters/blue/14.png"),
-                love.graphics.newImage("assets/characters/blue/15.png"),
-
-                love.graphics.newImage("assets/characters/blue/16.png")}
-    }
+    forms = require("assets.assetMap").character,
+    frame = 1,
+    anim_timer = 0,
+    anim_speed = 12
 }
 
 -- Note related
@@ -101,20 +50,15 @@ local useMouse = false
 local isCharting = false
 local near_notes = {}
 local notes_judgement_result = {}
+ local note_color = { 1, 1, 1 }
+
+
 local notes = love.filesystem.read("music/Kyu-krarin/basic.json")
-local note_color = {1, 1, 1}
 notes = json.decode(notes)
 
 local acceleration = 0
 
 local hiddenIndex = {}
---[[
-  {
-     length = 0
-     animation
-  }
-
-]] --
 local animation_tables = {}
 local tt = 0
 local auto = false
@@ -140,7 +84,7 @@ gameplay.reset = function()
     character.current_form = "green"
     scroll_speed = 256.0
     traget_scroll_speed = 256.0
-    note_color = {1, 1, 1}
+    note_color = { 1, 1, 1 }
     gready = false
     tt = 0
     -- Reset note ended flags
@@ -155,13 +99,21 @@ gameplay.start = function()
     audioInstance:play()
     audioInstance:setLooping(false)
 end
-
+ 
 gameplay.update = function(dt)
+
     bgr.update(dt)
+    gameplay.updateCharacterFrame(dt)
+    gameplay.input.update(dt)
+    gameplay.judgement.checkMiss()
 
     if not audioInstance:isPlaying() then
-        if not gready then gameplay.start() gready = true return end
-         
+        if not gready then
+            gameplay.start()
+            gready = true
+            return
+        end
+
         print("Game ended, switching to result screen")
         love.setCrossViewPayload({
             scores = scores,
@@ -176,8 +128,13 @@ gameplay.update = function(dt)
 
     playback.time = audioInstance:tell()
 
+  
+     
+end
+
+gameplay.input.update = function (dt)
     local accelRate = 5.0 -- how fast speed builds up (screen units/sec^2)
-    local maxSpeed = 3 -- max speed (screen units/sec)
+    local maxSpeed = 3    -- max speed (screen units/sec)
 
     local movingDown = keys_held["s"] and not keys_held["w"]
     local movingUp = keys_held["w"] and not keys_held["s"]
@@ -199,33 +156,11 @@ gameplay.update = function(dt)
         character.y = 0
         acceleration = 0
     end
-
-    if useMouse then
-        character.y = love.mouse.getPosition() / love.graphics.getHeight()
-    end
-
-    -- Miss detection: auto-miss notes whose window has expired
-    for index, note in pairs(notes) do
-        if not note.event and not hiddenIndex[index] then
-            if playback.time - note.time > MISS_WINDOW then
-                hiddenIndex[index] = true
-                combo_count = 0
-                table.insert(notes_judgement_result, {
-                    type = "miss",
-                    length = 1.5,
-                    elapsed = 0,
-                    originalY = (note.y or 0.5) * love.graphics.getHeight()
-                })
-            end
-        end
-    end
 end
-
 gameplay.notes.drawHitAnimation = function()
     for index, animation in pairs(animation_tables) do
         if animation.elapsed > animation.length then
             table.remove(animation_tables, index)
-
         end
 
         love.graphics.setColor(1, 1, 1, (1 / animation.length) * (animation.length - animation.elapsed))
@@ -242,7 +177,6 @@ gameplay.notes.drawHitAnimation = function()
         animation.elapsed = animation.elapsed + 0.1
 
         love.graphics.setColor(1, 1, 1, 1)
-
     end
 end
 gameplay.notes.drawNote = function(note_HitTime, Y_Position)
@@ -254,7 +188,6 @@ gameplay.notes.drawNote = function(note_HitTime, Y_Position)
     love.graphics.draw(note_icon, hitX + (note_HitTime - playback.time) * scroll_speed,
         love.graphics.getHeight() * Y_Position, 0, 0.05, 0.05)
     love.graphics.setColor(1, 1, 1)
-
 end
 gameplay.notes.draw = function()
     near_notes = {}
@@ -271,18 +204,17 @@ gameplay.notes.draw = function()
                         print("Switching to slow form")
                         character.current_form = "blue"
                         traget_scroll_speed = 128
-                        note_color = {1, 1, 1}
-
+                        note_color = { 1, 1, 1 }
                     elseif note.form == "normal" then
                         print("Switching to normal form")
                         character.current_form = "green"
                         traget_scroll_speed = 256.0
-                        note_color = {1, 1, 1}
+                        note_color = { 1, 1, 1 }
                     elseif note.form == "fast" then
                         print("Switching to fast form")
                         character.current_form = "yellow"
                         traget_scroll_speed = 256 * 3
-                        note_color = {1, 1, 1}
+                        note_color = { 1, 1, 1 }
                     end
 
                     bgr.setForm(character.current_form)
@@ -317,6 +249,23 @@ gameplay.drawKeyguide = function()
     love.graphics.draw(k, 82, love.graphics.getHeight() - 50, 0, 2, 2)
     love.graphics.print("Hit Note", love.fonts.inter.regular["12"], 124, love.graphics.getHeight() - 40)
 end
+
+gameplay.judgement.checkMiss = function ()
+    for index, note in pairs(notes) do
+        if not note.event and not hiddenIndex[index] then
+            if playback.time - note.time > MISS_WINDOW then
+                hiddenIndex[index] = true
+                combo_count = 0
+                table.insert(notes_judgement_result, {
+                    type = "miss",
+                    length = 1.5,
+                    elapsed = 0,
+                    originalY = (note.y or 0.5) * love.graphics.getHeight()
+                })
+            end
+        end
+    end
+end
 gameplay.judgement.drawResultAnimation = function(type)
     for index, animation in pairs(notes_judgement_result) do
         if animation.elapsed > animation.length then
@@ -325,23 +274,22 @@ gameplay.judgement.drawResultAnimation = function(type)
 
         if animation.type == "critical" then
             love.graphics.setColor(1, 1, 174 / 255, 1 - (animation.elapsed / animation.length))
-            love.graphics.print("Critical Perfect!", inter18px_bold, 74, animation.originalY - 36)
+            love.graphics.print("Critical Perfect!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
         elseif animation.type == "perfect" then
             love.graphics.setColor(1, 1, 255 / 174, 1 - (animation.elapsed / animation.length))
 
-            love.graphics.print("Perfect!", inter18px_bold, 74, animation.originalY - 36)
+            love.graphics.print("Perfect!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
         elseif animation.type == "great" then
             love.graphics.setColor(23 / 255, 191 / 255, 68 / 255, 1 - (animation.elapsed / animation.length))
-            love.graphics.print("Great!", inter18px_bold, 74, animation.originalY - 36)
+            love.graphics.print("Great!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
         elseif animation.type == "miss" then
             love.graphics.setColor(1, 0.2, 0.2, 1 - (animation.elapsed / animation.length))
-            love.graphics.print("Miss!", inter18px_bold, 74, animation.originalY - 36)
+            love.graphics.print("Miss!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
         end
 
         animation.elapsed = animation.elapsed + 0.1
 
         love.graphics.setColor(1, 1, 1, 1)
-
     end
 end
 gameplay.judgement.drawLine = function()
@@ -351,28 +299,36 @@ gameplay.judgement.drawLine = function()
 end
 
 local c_frame = 1
+local ani_timer = 12
 
-gameplay.drawCharacter = function()
-    -- print("Draw character: ", character.y)
-    c_frame = c_frame + 1
-    if c_frame > 16 then
-        c_frame = 1
+gameplay.updateCharacterFrame = function (dt)
+    
+    character.anim_timer = character.anim_timer + dt
+
+    local frame_duration = 1 / character.anim_speed
+
+    while character.anim_timer >= frame_duration do
+        character.anim_timer = character.anim_timer - frame_duration
+        character.frame = character.frame + 1
+
+        if character.frame >= 16 then
+            character.frame = 1
+        end
     end
-    c_frame = c_frame % 16 
-   if c_frame == 0 then c_frame = 1 end
-
+end
+gameplay.drawCharacter = function(dt)
+  
+ 
     local form_spirits = character.forms[character.current_form or "green"]
-    print(math.floor(c_frame))
-    love.graphics.draw(form_spirits[math.floor(c_frame)], 65, character.y * love.graphics.getHeight(), 0, 0.07, 0.07)
+    love.graphics.draw(form_spirits[math.floor(character.frame)], 65, character.y * love.graphics.getHeight(), 0, 0.07, 0.07)
 end
 gameplay.drawCombo = function()
     if combo_count > 3 then
         -- local text = love.graphics.print("COMBO", love.fonts.inter.bold["12"], love.graphics.getWidth() / 2, 12, 0)
         local text = love.graphics.print(combo_count, love.fonts.inter.bold["48"], love.graphics.getWidth() / 2, 60, 0)
-
     end
 end
-gameplay.draw = function()
+gameplay.draw = function(dt)
     love.graphics.setColor(1, 1, 1)
 
     bgr.draw()
@@ -383,11 +339,10 @@ gameplay.draw = function()
     love.graphics.setColor(1, 1, 1, 1)
 
     gameplay.notes.draw()
-    gameplay.drawCharacter()
+    gameplay.drawCharacter(dt)
     gameplay.notes.drawHitAnimation()
     gameplay.judgement.drawResultAnimation()
     -- print(playback.time)
-
 end
 
 function gameplay.keyreleased(key)
@@ -395,8 +350,8 @@ function gameplay.keyreleased(key)
         keys_held[key] = nil
     end
 end
-function gameplay.keypressed(key, scancode, isrepeat)
 
+function gameplay.keypressed(key, scancode, isrepeat)
     if isCharting then
         if key == "z" then
             audioInstance:setPitch(0.5)
@@ -405,18 +360,16 @@ function gameplay.keypressed(key, scancode, isrepeat)
                 time = playback.time
             })
             print("Recorded note at time: ", playback.time, " with y: ", character.y)
-
         end
         if key == "r" then
-
             print(json.encode(notes))
         end
     end
-    
+
     if key == "escape" then
-       audioInstance:pause()
+        audioInstance:pause()
     end
-    
+
     if key == "w" or key == "s" then
         -- reset acceleration when switching direction (e.g. was going down, now going up)
         if (key == "w" and keys_held["s"] == nil) or (key == "s" and keys_held["w"] == nil) then
@@ -491,13 +444,11 @@ function gameplay.keypressed(key, scancode, isrepeat)
                         break
                     else
                         print("Bad position!")
-
                     end
-
                 end
             end
-
         end
     end
 end
+
 return gameplay;
