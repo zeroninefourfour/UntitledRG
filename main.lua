@@ -1,10 +1,11 @@
 
 -- 場景
 local scenes = {
-   gameplay =  require("scenes.gameplay"),
+   gameplay =  require("scenes.gameplay.main"),
    menu = require("scenes.menu"),
    song_select = require("scenes.song_select"),
-   result = require("scenes.result")
+   result = require("scenes.result"),
+   fatal = require("scenes.fatal_ui")
 }
 
 local cv_payload = nil
@@ -18,12 +19,12 @@ end
 
    love.window.setMode(1280, 720)
    love.window.setTitle("Untitled Rhythm Game (ver 114.5.1.4)")
-function love.draw()
+function love.draw(dt)
   -- Key guidelines
   
   --
     if love.scene and love.scene.draw then
-    love.scene.draw()
+    love.scene.draw(dt)
   end
    
 end
