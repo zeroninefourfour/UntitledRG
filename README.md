@@ -2,6 +2,8 @@
 A rhythm game created in 48 hours (Campfire Taiwan).
 Made with love and Love2D
 
+## Importing music
+The game will use osu-like way to import charts.
 ## Contributors
 
 ### Coding
