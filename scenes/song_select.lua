@@ -1,13 +1,13 @@
-local track_lists = {{
+local track_lists = { {
     name = "Kyu-kurarin",
     artist = "Iyowa",
     audio_path = "music/全世界共通リズム感テスト.flac",
     cover_path = "covers/全世界共通リズム感テスト.jpg",
-    difficulties = {{
+    difficulties = { {
         name = "easy skibidi lv.1",
         level = 1,
-    }}
-}}
+    } }
+} }
 local active_track = nil
 local ss = {}
 local active_index = 0
@@ -26,18 +26,16 @@ ss.update = function()
 
     local difficulty_target_offset = active_index
     difficulty_current_offset = difficulty_current_offset + (difficulty_target_offset - difficulty_current_offset) *
-                                    animation_speed
-
+        animation_speed
 end
 
 ss.draw = function()
-          love.graphics.setBackgroundColor(214 / 255, 138/ 255, 133 /255)
+    love.graphics.setBackgroundColor(214 / 255, 138 / 255, 133 / 255)
 
     love.graphics.push()
 
     if active_track then
-      --  love.graphics.translate(-100, 0)
-
+       love.graphics.translate(-100, 0)
     end
 
     max_index = #track_lists
@@ -53,7 +51,6 @@ ss.draw = function()
     end
     -- draw difficulty select
     if active_track then
-
         love.graphics.translate(100, 0)
         for index, difficulty in pairs(active_track.difficulties) do
             if index == difficulty_index then
@@ -63,16 +60,13 @@ ss.draw = function()
             end
 
             love.graphics.print("easy skibidi lv1", love.fonts.inter.bold["24"], 450,
-                150 + (active_index - current_offset) * 50)
-
+                150 + (active_index - current_offset)  * 50)
         end
     else
         love.graphics.setColor(1, 1, 1, 0)
         love.graphics.print("Unselected", love.fonts.inter.bold["24"], 450, 150 + (active_index - current_offset) * 50)
-
     end
     love.graphics.pop()
-
 end
 
 ss.keypressed = function(key)
@@ -80,25 +74,19 @@ ss.keypressed = function(key)
         if max_index > active_index then
             if active_track then
                 difficulty_index = difficulty_index + 1
-
             else
-
                 active_index = active_index + 1
             end
         end
-
     end
     if key == "up" then
         if active_index > 0 then
             if active_track then
                 difficulty_index = difficulty_index - 1
-
             else
-
                 active_index = active_index - 1
             end
         end
-
     end
     if key == "esc" then
         active_track = nil
@@ -112,7 +100,6 @@ ss.keypressed = function(key)
         end
         active_track = track_lists[active_index]
         print("Selected track: " .. active_track.name)
-
     end
 end
 return ss
