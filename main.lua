@@ -1,74 +1,76 @@
-
 -- 場景
 local scenes = {
-   gameplay =  require("scenes.gameplay.main"),
-   menu = require("scenes.menu"),
-   song_select = require("scenes.song_select"),
-   result = require("scenes.result"),
-   fatal = require("scenes.fatal_ui")
+  gameplay = require("scenes.gameplay.main"),
+  menu = require("scenes.menu"),
+  song_select = require("scenes.song_select"),
+  result = require("scenes.result"),
+  fatal = require("scenes.fatal_ui"),
+  welcome_v2 = require("scenes.views.welcome_ui")
+
 }
 
 local cv_payload = nil
 function love.setCrossViewPayload(data)
   cv_payload = data
 end
+
 function love.getCrossViewPayload()
-   
   return cv_payload
 end
 
-   love.window.setMode(1280, 720)
-   love.window.setTitle("Untitled Rhythm Game (ver 114.5.1.4)")
+love.window.setMode(1280, 720)
+love.window.setTitle("Untitled Rhythm Game (ver 0.0.1) (skibidirizz module ver 114.5.1.4)")
 function love.draw(dt)
   -- Key guidelines
-  
+
   --
-    if love.scene and love.scene.draw then
+  if love.scene and love.scene.draw then
     love.scene.draw(dt)
   end
-   
 end
+
 function love.load()
-  
   love.scenes = scenes
-   love.scene = scenes.menu
-   love.fonts = {
+  love.scene = scenes.welcome_v2
+  love.fonts = {
     inter = {
       bold = {
         ["12"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 12),
+        ["18"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 18),
+
         ["24"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 24),
         ["48"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 48)
 
-       },
+      },
 
-       regular = {
+      regular = {
         ["12"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 12),
+        ["18"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 18),
+
         ["24"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 24),
         ["48"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 48)
 
-       }
+      }
     }
-   }
-
-
+  }
 end
+
 function love.update(dt)
-    
   if love.scene and love.scene.update then
-     love.scene.update(dt)
+    love.scene.update(dt)
   end
 end
+
 function love.keypressed(key, scancode, isrepeat)
   if love.scene and love.scene.keypressed then
     love.scene.keypressed(key, scancode, isrepeat)
   end
 end
-function love.keyreleased(key,scancode, isrepeat)
+
+function love.keyreleased(key, scancode, isrepeat)
   if love.scene and love.scene.keyreleased then
     love.scene.keyreleased(key, scancode, isrepeat)
   end
-
-  
 end
--- skibidi
 
+-- skibidi
