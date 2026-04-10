@@ -5,10 +5,10 @@ function menu.update(dt)
 end
 
 local exo_font_path = "assets/fonts/Exo/Exo-Regular.ttf"
-local exo_24 = love.graphics.newFont(exo_font_path, 24)
-local exo_48 = love.graphics.newFont(exo_font_path, 48)
+local exo_24 = love.assets.newFont(exo_font_path, 24)
+local exo_48 = love.assets.newFont(exo_font_path, 48)
 
-local background = love.graphics.newImage("assets/cool_blur.png")
+local background = love.assets.newImage("assets/cool_blur.png")
 
 function menu.draw()
     love.graphics.setColor(1, 1, 1, 1)

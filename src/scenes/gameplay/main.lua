@@ -1,5 +1,7 @@
-local json = require("modules.json")
-local bgr = require("scenes.backgroundRender")
+
+
+local json = require("src.modules.json")
+local bgr = require("src.scenes.backgroundRender")
 
 local gameplay = {}
 gameplay.notes = {}
@@ -9,13 +11,11 @@ local gready = false
 
 
 -- Assets
-local note_icon = love.graphics.newImage("assets/note.png")
--- NoteCounts
-local j = love.graphics.newImage("assets/icons/j.png")
-local k = love.graphics.newImage("assets/icons/k.png")
-
-local audioInstance = love.audio.newSource("music/Kyu-krarin/audio.mp3", "stream")
-local hitsound = love.audio.newSource("music/hitsound.wav", "static")
+local note_icon = love.assets.loadImage("assets/note.png")
+local j = love.assets.loadImage("assets/icons/j.png")
+local k = love.assets.loadImage("assets/icons/k.png")
+local audioInstance = love.assets.load("assets/music/ChartReusegreen/audio.mp3", "stream")
+local hitsound = love.assets.load("assets/music/hitsound.wav", "static")
 
 local scores = {
     critical = 0,
@@ -35,7 +35,7 @@ local playback = {
 local keys_held = {}
 local character = {
     y = 0,
-    forms = require("assets.assetMap").character,
+    forms = require("src.assets.assetMap").character,
     frame = 1,
     anim_timer = 0,
     anim_speed = 12
@@ -50,10 +50,10 @@ local useMouse = false
 local isCharting = false
 local near_notes = {}
 local notes_judgement_result = {}
- local note_color = { 1, 1, 1 }
+local note_color = { 1, 1, 1 }
 
 
-local notes = love.filesystem.read("music/Kyu-krarin/basic.json")
+local notes = love.assets.load("assets/music/ChartReusegreen/basic.json")
 notes = json.decode(notes)
 
 local acceleration = 0
@@ -93,15 +93,18 @@ gameplay.reset = function()
     end
     audioInstance:stop()
     audioInstance:seek(0)
+    --
+
+
+    --
 end
 
 gameplay.start = function()
     audioInstance:play()
     audioInstance:setLooping(false)
 end
- 
-gameplay.update = function(dt)
 
+gameplay.update = function(dt)
     bgr.update(dt)
     gameplay.updateCharacterFrame(dt)
     gameplay.input.update(dt)
@@ -127,12 +130,9 @@ gameplay.update = function(dt)
     end
 
     playback.time = audioInstance:tell()
-
-  
-     
 end
 
-gameplay.input.update = function (dt)
+gameplay.input.update = function(dt)
     local accelRate = 5.0 -- how fast speed builds up (screen units/sec^2)
     local maxSpeed = 3    -- max speed (screen units/sec)
 
@@ -250,7 +250,7 @@ gameplay.drawKeyguide = function()
     love.graphics.print("Hit Note", love.fonts.inter.regular["12"], 124, love.graphics.getHeight() - 40)
 end
 
-gameplay.judgement.checkMiss = function ()
+gameplay.judgement.checkMiss = function()
     for index, note in pairs(notes) do
         if not note.event and not hiddenIndex[index] then
             if playback.time - note.time > MISS_WINDOW then
@@ -274,17 +274,17 @@ gameplay.judgement.drawResultAnimation = function(type)
 
         if animation.type == "critical" then
             love.graphics.setColor(1, 1, 174 / 255, 1 - (animation.elapsed / animation.length))
-            love.graphics.print("Critical Perfect!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
+            love.graphics.print("Critical Perfect!", love.fonts.inter.bold["18"], 74, animation.originalY - 36)
         elseif animation.type == "perfect" then
             love.graphics.setColor(1, 1, 255 / 174, 1 - (animation.elapsed / animation.length))
 
-            love.graphics.print("Perfect!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
+            love.graphics.print("Perfect!", love.fonts.inter.bold["18"], 74, animation.originalY - 36)
         elseif animation.type == "great" then
             love.graphics.setColor(23 / 255, 191 / 255, 68 / 255, 1 - (animation.elapsed / animation.length))
-            love.graphics.print("Great!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
+            love.graphics.print("Great!", love.fonts.inter.bold["18"], 74, animation.originalY - 36)
         elseif animation.type == "miss" then
             love.graphics.setColor(1, 0.2, 0.2, 1 - (animation.elapsed / animation.length))
-            love.graphics.print("Miss!", love.fonts.inter.regular["18"], 74, animation.originalY - 36)
+            love.graphics.print("Miss!", love.fonts.inter.bold["18"], 74, animation.originalY - 36)
         end
 
         animation.elapsed = animation.elapsed + 0.1
@@ -301,8 +301,7 @@ end
 local c_frame = 1
 local ani_timer = 12
 
-gameplay.updateCharacterFrame = function (dt)
-    
+gameplay.updateCharacterFrame = function(dt)
     character.anim_timer = character.anim_timer + dt
 
     local frame_duration = 1 / character.anim_speed
@@ -317,10 +316,9 @@ gameplay.updateCharacterFrame = function (dt)
     end
 end
 gameplay.drawCharacter = function(dt)
-  
- 
     local form_spirits = character.forms[character.current_form or "green"]
-    love.graphics.draw(form_spirits[math.floor(character.frame)], 65, character.y * love.graphics.getHeight(), 0, 0.07, 0.07)
+    love.graphics.draw(form_spirits[math.floor(character.frame)], 65, character.y * love.graphics.getHeight(), 0, 0.07,
+        0.07)
 end
 gameplay.drawCombo = function()
     if combo_count > 3 then

@@ -3,9 +3,9 @@ local timer = 0
 
 function menu.update(dt)
  end
-local inter_48pt_bold = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 48)
-local inter_24pt_bold = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 24)
-local background = love.graphics.newImage("assets/cool_blur.png")
+local inter_48pt_bold = love.assets.loadFont("assets/inter_static/Inter_24pt-Bold.ttf", 48)
+local inter_24pt_bold = love.assets.loadFont("assets/inter_static/Inter_24pt-Bold.ttf", 24)
+local background = love.assets.loadImage("assets/cool_blur.png")
 
 function menu.draw()
       love.graphics.setColor(1, 1, 1, 1)

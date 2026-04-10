@@ -1,23 +1,43 @@
+function saferequire(module)
+  local success, result = pcall(require, module)
+  if not success then
+    print("Error loading module '" .. module .. "': " .. tostring(result))
+    return nil
+  else
+    print("Successfully loaded module: " .. module)
+  end
+  return result
+end
+
 -- main.lua
 
+local love_assetmanager = require("src.core_utils.AssetManager")
+love.assets = love_assetmanager
 
-local fonts = {
-  "assets/inter_static"
-}
-local scenes = {
-  gameplay    = require("scenes.gameplay.main"),
-  menu        = require("scenes.menu_deprecated"),
-  song_select = require("scenes.song_select"),
-  result      = require("scenes.result"),
-  fatal       = require("scenes.fatal_ui"),
-  welcome_v2  = require("scenes.views.welcome_ui"),
-}
+
+
+
+
+
+local transition_state = ""
+local selected_transition_animation = ""
 
 local cv_payload = nil
 function love.setCrossViewPayload(data) cv_payload = data end
-function love.getCrossViewPayload()    return cv_payload   end
+
+function love.getCrossViewPayload() return cv_payload end
 
 local current_scene = nil
+
+
+local scenes = {
+  gameplay    = saferequire("src.scenes.gameplay.main"),
+  menu        = saferequire("src.scenes.menu_deprecated"),
+  song_select = saferequire("src.scenes.song_select"),
+  result      = saferequire("src.scenes.result"),
+  fatal       = saferequire("src.ui.fatal_ui"),
+  welcome_v2  = saferequire("src.ui.welcome_ui"),
+}
 
 function love.switchScene(name, payload)
   local next = scenes[name]
@@ -42,10 +62,12 @@ local function loadInterFont(style, sizes)
   local path = ("assets/inter_static/Inter_24pt-%s.ttf"):format(style)
   local t = {}
   for _, size in ipairs(sizes) do
-    t[tostring(size)] = love.graphics.newFont(path, size)
+    t[tostring(size)] = love.assets.newFont(path, size)
   end
   return t
 end
+
+-- Load
 
 -- ── LÖVE 回呼 ────────────────────────────────────────────
 function love.load()
@@ -54,7 +76,7 @@ function love.load()
 
   love.fonts = {
     inter = {
-      bold    = loadInterFont("Bold",    { 12, 18, 24, 48 }),
+      bold    = loadInterFont("Bold", { 12, 18, 24, 48 }),
       regular = loadInterFont("Regular", { 12, 18, 24, 48 }),
     }
   }

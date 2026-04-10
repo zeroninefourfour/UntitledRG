@@ -1,6 +1,6 @@
 local track_lists = { {
-    name = "Kyu-kurarin",
-    artist = "Iyowa",
+    name = "Chartreuse Green",
+    artist = "t+pazolite",
     audio_path = "music/全世界共通リズム感テスト.flac",
     cover_path = "covers/全世界共通リズム感テスト.jpg",
     difficulties = { {
