@@ -1,20 +1,8 @@
 # URG
-A rhythm game created in 48 hours (Campfire Taiwan).
-Made with love and Love2D
+48 小時內製作的音樂遊戲，原版請查看 (Legacy)(https://github.com/zeroninefourfour/UntitledRG/tree/legacy) 分支
 
-## Importing music
-The game will use osu-like way to import charts in future.
-
-## Demo music
-Source from "without Permission" by t+pazolite
-## Contributors
-
-### Coding
+## Scripting
 - lin3598197
 - 0955
-### Art
+## Art
 - 石灰水
-
-## Gameplay
-Using W,S Key to move
-and Use J,K Key to hit the note
