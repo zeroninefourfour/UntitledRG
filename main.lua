@@ -14,17 +14,12 @@ end
 local love_assetmanager = require("src.core_utils.AssetManager")
 love.assets = love_assetmanager
 
-
-
-
-
-
 local transition_state = ""
 local selected_transition_animation = ""
 
 local cv_payload = nil
-function love.setCrossViewPayload(data) cv_payload = data end
 
+function love.setCrossViewPayload(data) cv_payload = data end
 function love.getCrossViewPayload() return cv_payload end
 
 local current_scene = nil
