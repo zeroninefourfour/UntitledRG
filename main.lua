@@ -1,76 +1,87 @@
--- 場景
-local scenes = {
-  gameplay = require("scenes.gameplay.main"),
-  menu = require("scenes.menu"),
-  song_select = require("scenes.song_select"),
-  result = require("scenes.result"),
-  fatal = require("scenes.fatal_ui"),
-  welcome_v2 = require("scenes.views.welcome_ui")
+-- main.lua
 
+
+local fonts = {
+  "assets/inter_static"
+}
+local scenes = {
+  gameplay    = require("scenes.gameplay.main"),
+  menu        = require("scenes.menu_deprecated"),
+  song_select = require("scenes.song_select"),
+  result      = require("scenes.result"),
+  fatal       = require("scenes.fatal_ui"),
+  welcome_v2  = require("scenes.views.welcome_ui"),
 }
 
 local cv_payload = nil
-function love.setCrossViewPayload(data)
-  cv_payload = data
-end
+function love.setCrossViewPayload(data) cv_payload = data end
+function love.getCrossViewPayload()    return cv_payload   end
 
-function love.getCrossViewPayload()
-  return cv_payload
-end
+local current_scene = nil
 
-love.window.setMode(1280, 720)
-love.window.setTitle("Untitled Rhythm Game (ver 0.0.1) (skibidirizz module ver 114.5.1.4)")
-function love.draw(dt)
-  -- Key guidelines
+function love.switchScene(name, payload)
+  local next = scenes[name]
+  assert(next, "Unknown scene: " .. tostring(name))
 
-  --
-  if love.scene and love.scene.draw then
-    love.scene.draw(dt)
+  if current_scene and current_scene.exit then
+    current_scene.exit()
+  end
+
+  if payload ~= nil then
+    love.setCrossViewPayload(payload)
+  end
+
+  current_scene = next
+
+  if current_scene.enter then
+    current_scene.enter(love.getCrossViewPayload())
   end
 end
 
+local function loadInterFont(style, sizes)
+  local path = ("assets/inter_static/Inter_24pt-%s.ttf"):format(style)
+  local t = {}
+  for _, size in ipairs(sizes) do
+    t[tostring(size)] = love.graphics.newFont(path, size)
+  end
+  return t
+end
+
+-- ── LÖVE 回呼 ────────────────────────────────────────────
 function love.load()
-  love.scenes = scenes
-  love.scene = scenes.welcome_v2
+  love.window.setMode(1280, 720)
+  love.window.setTitle("Untitled Rhythm Game (ver 0.0.1)")
+
   love.fonts = {
     inter = {
-      bold = {
-        ["12"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 12),
-        ["18"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 18),
-
-        ["24"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 24),
-        ["48"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Bold.ttf", 48)
-
-      },
-
-      regular = {
-        ["12"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 12),
-        ["18"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 18),
-
-        ["24"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 24),
-        ["48"] = love.graphics.newFont("assets/inter_static/Inter_24pt-Regular.ttf", 48)
-
-      }
+      bold    = loadInterFont("Bold",    { 12, 18, 24, 48 }),
+      regular = loadInterFont("Regular", { 12, 18, 24, 48 }),
     }
   }
+
+  love.switchScene("welcome_v2")
+end
+
+function love.draw()
+  if current_scene and current_scene.draw then
+    current_scene.draw()
+  end
 end
 
 function love.update(dt)
-  if love.scene and love.scene.update then
-    love.scene.update(dt)
+  if current_scene and current_scene.update then
+    current_scene.update(dt)
   end
 end
 
 function love.keypressed(key, scancode, isrepeat)
-  if love.scene and love.scene.keypressed then
-    love.scene.keypressed(key, scancode, isrepeat)
+  if current_scene and current_scene.keypressed then
+    current_scene.keypressed(key, scancode, isrepeat)
   end
 end
 
 function love.keyreleased(key, scancode, isrepeat)
-  if love.scene and love.scene.keyreleased then
-    love.scene.keyreleased(key, scancode, isrepeat)
+  if current_scene and current_scene.keyreleased then
+    current_scene.keyreleased(key, scancode, isrepeat)
   end
 end
-
--- skibidi

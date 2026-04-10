@@ -16,7 +16,7 @@ function menu.draw()
 
     love.graphics.printf("press enter to start",inter_24pt_bold, 0, love.graphics.getHeight() - 140, love.graphics.getWidth(), "center")
 
-         love.graphics.printf("FC,AP Video from MajdataPlay",love.fonts.inter.bold["12"], 0, love.graphics.getHeight() - 20, love.graphics.getWidth(), "center")
+         love.graphics.printf("FC,AP Video from MajdataPlay ", 0, love.graphics.getHeight() - 20, love.graphics.getWidth(), "center")
 
 end
 
