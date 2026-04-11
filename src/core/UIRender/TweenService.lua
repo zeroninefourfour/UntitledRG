@@ -1,6 +1,6 @@
 local UIRender_TweenService = {}
 
-UIRender_TweenService.TweenUI = function (instanceID)
+UIRender_TweenService.Tween = function (instanceID)
     
 end
 return UIRender_TweenService
