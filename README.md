@@ -1,3 +1,4 @@
+# ⚠️ 目前已遷移倉庫　這邊的原碼將不會繼續更新 ⚠️
 # Untitled Rhythm Game
 [ENGLISH](README_en.md) | 繁體中文
 
