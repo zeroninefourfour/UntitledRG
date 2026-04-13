@@ -1,5 +1,5 @@
 # ⚠️ Repository Migrated ⚠️
-# The source code here will no longer be updated. The new version of the source code will be announced in the near future.
+# The source code here will no longer be updated. The new version of the source code will be public in the near future.
 # Untitled Rhythm Game
 ENGLISH | [繁體中文](README.md)
 
@@ -8,8 +8,7 @@ A rhythm game written in **Love2D**. For the original version created within 48 
 ## Roadmap
 - [ ] Formally define gameplay mechanics
 - [ ] UI Overhaul
- - [ ] UIRender System
-  - [ ] TweenService (Animations, etc.)
+- [ ] UIRender System
 - [ ] New chart playback system
 - [ ] Chart Editor
 - [ ] Controller Support
@@ -19,4 +18,4 @@ A rhythm game written in **Love2D**. For the original version created within 48 
 - lin3598197
 - 0955
 ### Art
-- 石灰水 (Lime juice)
+- 石灰水
