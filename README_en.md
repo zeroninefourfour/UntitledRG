@@ -1,12 +1,22 @@
-# URG
-A music game created within 48 hours. For the original version, please see the [Legacy](https://github.com/zeroninefourfour/UntitledRG/tree/legacy) branch.
+# ⚠️ Repository Migrated ⚠️
+# The source code here will no longer be updated. The new version of the source code will be announced in the near future.
+# Untitled Rhythm Game
+ENGLISH | [繁體中文](README.md)
 
-## Scripting
+A rhythm game written in **Love2D**. For the original version created within 48 hours, please check the [Legacy](https://github.com/zeroninefourfour/UntitledRG/tree/legacy) branch.
 
+## Roadmap
+- [ ] Formally define gameplay mechanics
+- [ ] UI Overhaul
+ - [ ] UIRender System
+  - [ ] TweenService (Animations, etc.)
+- [ ] New chart playback system
+- [ ] Chart Editor
+- [ ] Controller Support
+
+## Developers
+### Programming
 - lin3598197
-
 - 0955
-
-## Art
-
-- Limewater
+### Art
+- 石灰水 (Lime juice)
